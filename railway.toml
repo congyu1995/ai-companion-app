@@ -1,0 +1,29 @@
+[build]
+builder = "dockerfile"
+dockerfilePath = "Dockerfile.railway"
+
+[deploy]
+startCommand = "npm start"
+healthcheckPath = "/api/health"
+healthcheckTimeout = 60
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 10
+
+[environments]
+  [environments.production]
+    numReplicas = 1
+    
+[[services]]
+name = "ai-companion-app"
+source = "."
+
+[services.deploy]
+dockerfilePath = "Dockerfile.railway"
+
+[[services.envs]]
+name = "NODE_ENV"
+value = "production"
+
+[[services.envs]]
+name = "PORT"
+value = "3000"

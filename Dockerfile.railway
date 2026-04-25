@@ -1,0 +1,36 @@
+# Railway 一键部署 Dockerfile
+# 同时运行前端和后端的全栈应用
+
+FROM node:18-alpine
+
+WORKDIR /app
+
+# 安装所有依赖（前后端）
+COPY backend/package*.json ./backend/
+RUN cd backend && npm ci --production
+
+COPY frontend/package*.json ./frontend/
+RUN cd frontend && npm ci
+
+# 复制后端代码
+COPY backend/ ./backend/
+
+# 复制前端代码并构建
+COPY frontend/ ./frontend/
+RUN cd frontend && npm run build
+
+# 创建静态文件目录
+RUN mkdir -p backend/public
+RUN cp -r frontend/dist/* backend/public/
+
+WORKDIR /app/backend
+
+# 暴露端口
+EXPOSE 3000
+
+# 健康检查
+HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:3000/api/health', (r) => process.exit(r.statusCode === 200 ? 0 : 1))"
+
+# 启动命令
+CMD ["npm", "start"]
