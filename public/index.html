@@ -415,7 +415,7 @@
             box-shadow: 0 4px 12px rgba(255, 107, 157, 0.3);
         }
 
-        /* 优化1：空状态样式 - 精美展示 */
+        /* 空状态样式 - 精美展示 */
         .empty-state {
             text-align: center;
             padding: 60px 20px;
@@ -972,6 +972,9 @@
             }
         };
 
+        // 演示模式：强制显示空的分类
+        const DEMO_EMPTY_CATEGORIES = ['anxious']; // 焦虑分类强制显示空状态
+
         // 生成UUID
         function generateUUID() {
             return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -1056,8 +1059,13 @@
         function renderMoodList(append = false, newMoodId = null) {
             const container = document.getElementById('moodList');
 
+            // 演示模式：强制某些分类显示空状态
+            if (DEMO_EMPTY_CATEGORIES.includes(state.currentCategory) && !append) {
+                state.moods = [];
+            }
+
             if (state.moods.length === 0) {
-                // 优化1：情绪分类空状态 - 精美展示
+                // 情绪分类空状态 - 精美展示
                 if (state.currentCategory !== 'all' && state.currentCategory !== 'reported') {
                     const config = CATEGORY_CONFIG[state.currentCategory];
                     container.innerHTML = `
