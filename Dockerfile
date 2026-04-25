@@ -4,11 +4,11 @@ FROM node:20
 # 设置工作目录
 WORKDIR /app
 
-# 复制package.json和package-lock.json
+# 复制package.json
 COPY package*.json ./
 
-# 安装依赖
-RUN npm ci --only=production
+# 安装依赖（使用npm install而不是npm ci）
+RUN npm install --omit=dev
 
 # 复制应用代码
 COPY . .
