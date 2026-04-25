@@ -1,0 +1,39 @@
+# Railway 简化版部署 - 最小化配置
+# 不需要Redis，数据库可选，更容易成功
+
+FROM node:18-alpine
+
+# 安装必要的工具
+RUN apk add --no-cache wget
+
+WORKDIR /app
+
+# 复制package文件
+COPY backend/package-simple.json ./backend/package.json
+
+# 安装依赖
+WORKDIR /app/backend
+RUN npm install --production
+
+# 复制后端代码
+WORKDIR /app
+COPY backend/railway-simple.js ./backend/
+COPY backend/server.js ./backend/
+
+# 复制前端构建产物
+COPY frontend/dist ./frontend/dist
+
+# 创建public目录并复制前端文件
+RUN mkdir -p backend/public
+RUN cp -r frontend/dist/* backend/public/ || echo "No frontend build found"
+
+WORKDIR /app/backend
+
+EXPOSE 3000
+
+# 健康检查
+HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1
+
+# 启动简化版服务
+CMD ["node", "railway-simple.js"]

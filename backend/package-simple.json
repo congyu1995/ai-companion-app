@@ -1,0 +1,19 @@
+{
+  "name": "ai-companion-railway",
+  "version": "1.0.0",
+  "description": "AI虚拟角色陪伴产品 - Railway专用简化版",
+  "main": "railway-simple.js",
+  "scripts": {
+    "start": "node railway-simple.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "pg": "^8.11.3",
+    "jsonwebtoken": "^9.0.2",
+    "openai": "^4.6.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
