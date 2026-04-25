@@ -1,6 +1,5 @@
 [build]
 builder = "dockerfile"
-dockerfilePath = "Dockerfile.simple"
 
 [deploy]
 startCommand = "node railway-simple.js"
