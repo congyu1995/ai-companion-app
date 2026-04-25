@@ -22,39 +22,54 @@
 
         /* 顶部统计区 - 大海背景 */
         .header {
-            background: linear-gradient(135deg, #2196F3 0%, #1976D2 50%, #0D47A1 100%);
-            background-image: 
-                linear-gradient(135deg, rgba(33, 150, 243, 0.95) 0%, rgba(25, 118, 210, 0.95) 50%, rgba(13, 71, 161, 0.95) 100%),
-                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23ffffff' fill-opacity='0.1' d='M0,96L48,112C96,128,192,160,288,186.7C384,213,480,235,576,213.3C672,192,768,128,864,128C960,128,1056,192,1152,208C1248,224,1344,192,1392,176L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
-            background-size: cover;
-            background-position: bottom;
-            padding: 16px 16px 20px;
+            background: linear-gradient(135deg, 
+                #0288D1 0%, 
+                #03A9F4 25%, 
+                #4FC3F7 50%, 
+                #81D4FA 75%, 
+                #B3E5FC 100%);
+            padding: 12px 16px 16px;
             color: white;
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 4px 20px rgba(33, 150, 243, 0.4);
-            position: relative;
+            box-shadow: 0 4px 20px rgba(2, 136, 209, 0.4);
             overflow: hidden;
         }
 
-        /* 海浪动画效果 */
+        /* 大海波浪效果 */
         .header::before {
             content: '';
             position: absolute;
-            bottom: 0;
+            top: 0;
             left: 0;
             right: 0;
-            height: 40px;
-            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z' opacity='.15' fill='%23ffffff'%3E%3C/path%3E%3Cpath d='M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z' opacity='.2' fill='%23ffffff'%3E%3C/path%3E%3Cpath d='M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,googl172.46-45.71,248.8-84.81V0Z' opacity='.25' fill='%23ffffff'%3E%3C/path%3E%3C/svg%3E");
-            background-size: 1200px 100%;
+            bottom: 0;
+            background: 
+                radial-gradient(ellipse at 20% 30%, rgba(255,255,255,0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 70%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(255,255,255,0.05) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        /* 波浪动画 */
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: -100%;
+            width: 300%;
+            height: 30px;
+            background: 
+                radial-gradient(ellipse at 25% 100%, rgba(255,255,255,0.3) 0%, transparent 50%),
+                radial-gradient(ellipse at 75% 100%, rgba(255,255,255,0.2) 0%, transparent 50%);
             animation: wave 8s linear infinite;
-            opacity: 0.3;
+            pointer-events: none;
         }
 
         @keyframes wave {
-            0% { background-position-x: 0; }
-            100% { background-position-x: 1200px; }
+            0% { transform: translateX(0); }
+            100% { transform: translateX(33.33%); }
         }
 
         .header-content {
@@ -75,17 +90,17 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            text-shadow: 0 2px 8px rgba(0,0,0,0.2);
         }
 
-        /* 优化1：新心情按钮 - 右上方 */
-        .new-mood-btn {
+        /* 优化1：写心情按钮 - 更明显 */
+        .write-mood-btn {
             background: linear-gradient(135deg, #FF6B9D 0%, #FF8E53 100%);
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 10px 18px;
             border-radius: 25px;
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 600;
             cursor: pointer;
             box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4);
@@ -93,57 +108,71 @@
             display: flex;
             align-items: center;
             gap: 6px;
+            white-space: nowrap;
+            animation: pulse 2s ease-in-out infinite;
         }
 
-        .new-mood-btn:active {
+        @keyframes pulse {
+            0%, 100% { 
+                transform: scale(1);
+                box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4);
+            }
+            50% { 
+                transform: scale(1.05);
+                box-shadow: 0 6px 20px rgba(255, 107, 157, 0.6);
+            }
+        }
+
+        .write-mood-btn:active {
             transform: scale(0.95);
+            animation: none;
         }
 
         .header-subtitle {
             font-size: 13px;
             opacity: 0.95;
-            margin-bottom: 16px;
-            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+            margin-bottom: 12px;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.1);
         }
 
         .stats-row {
             display: flex;
-            gap: 12px;
+            gap: 10px;
         }
 
         .stat-card {
             background: rgba(255, 255, 255, 0.25);
             backdrop-filter: blur(10px);
-            padding: 12px 16px;
-            border-radius: 16px;
+            padding: 10px 14px;
+            border-radius: 12px;
             flex: 1;
             border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
         .stat-label {
-            font-size: 12px;
+            font-size: 11px;
             opacity: 0.95;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
         }
 
         .stat-value {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 700;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         /* 分类筛选区 */
         .category-bar {
             background: white;
-            padding: 12px 16px;
+            padding: 10px 16px;
             display: flex;
             gap: 8px;
             overflow-x: auto;
             position: sticky;
-            top: 120px;
+            top: 98px;
             z-index: 99;
-            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
         }
 
         .category-bar::-webkit-scrollbar {
@@ -151,7 +180,7 @@
         }
 
         .category-tab {
-            padding: 8px 16px;
+            padding: 7px 15px;
             border-radius: 20px;
             border: none;
             background: #F5F5F5;
@@ -163,20 +192,19 @@
             transition: all 0.3s;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
         }
 
         .category-tab.active {
-            background: linear-gradient(135deg, #42A5F5 0%, #1E88E5 100%);
+            background: linear-gradient(135deg, #0288D1 0%, #03A9F4 100%);
             color: white;
-            box-shadow: 0 4px 12px rgba(66, 165, 245, 0.4);
-            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(2, 136, 209, 0.3);
         }
 
         /* 心情列表区 */
         .mood-list {
             padding: 16px;
-            padding-bottom: 40px;
+            padding-bottom: 30px;
         }
 
         /* 最新消息提示 */
@@ -184,15 +212,14 @@
             background: linear-gradient(135deg, #FFF9C4 0%, #FFE082 100%);
             padding: 12px 16px;
             margin-bottom: 16px;
-            border-radius: 16px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             gap: 8px;
             font-size: 13px;
             color: #F57F17;
             animation: fadeInDown 0.5s ease;
-            box-shadow: 0 4px 12px rgba(245, 127, 23, 0.25);
-            border: 1px solid rgba(245, 127, 23, 0.2);
+            box-shadow: 0 2px 8px rgba(245, 127, 23, 0.2);
         }
 
         @keyframes fadeInDown {
@@ -207,18 +234,18 @@
         }
 
         .newest-hint .icon {
-            font-size: 18px;
+            font-size: 16px;
         }
 
         .mood-card {
             background: white;
-            border-radius: 20px;
-            padding: 18px;
-            margin-bottom: 14px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
             position: relative;
             transition: all 0.3s;
-            animation: slideUp 0.4s ease;
+            animation: slideUp 0.3s ease;
             border: 1px solid rgba(0, 0, 0, 0.05);
         }
 
@@ -239,16 +266,15 @@
 
         .mood-card.highlight {
             animation: highlightPulse 2s ease;
-            box-shadow: 0 6px 25px rgba(66, 165, 245, 0.5);
-            border-color: rgba(66, 165, 245, 0.3);
+            box-shadow: 0 4px 20px rgba(2, 136, 209, 0.4);
         }
 
         @keyframes highlightPulse {
             0%, 100% {
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+                box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
             }
             50% {
-                box-shadow: 0 8px 30px rgba(66, 165, 245, 0.6);
+                box-shadow: 0 8px 30px rgba(2, 136, 209, 0.6);
             }
         }
 
@@ -264,7 +290,7 @@
         .mood-nickname {
             font-size: 15px;
             font-weight: 600;
-            color: #1E88E5;
+            color: #0288D1;
         }
 
         .mood-tags {
@@ -275,19 +301,19 @@
 
         .mood-category {
             padding: 5px 12px;
-            border-radius: 15px;
+            border-radius: 12px;
             font-size: 12px;
             font-weight: 600;
         }
 
         .reported-badge {
             background: linear-gradient(135deg, #FFEBEE 0%, #FFCDD2 100%);
-            color: #F44336;
+            color: #D32F2F;
             padding: 5px 12px;
-            border-radius: 15px;
+            border-radius: 12px;
             font-size: 12px;
             font-weight: 600;
-            border: 1px solid rgba(244, 67, 54, 0.3);
+            border: 1px solid #FFCDD2;
         }
 
         .category-happy {
@@ -312,9 +338,9 @@
 
         .mood-content {
             font-size: 15px;
-            line-height: 1.7;
+            line-height: 1.6;
             color: #333;
-            margin-bottom: 14px;
+            margin-bottom: 12px;
             white-space: pre-wrap;
             word-wrap: break-word;
         }
@@ -323,7 +349,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-top: 14px;
+            padding-top: 12px;
             border-top: 1px solid #F0F0F0;
         }
 
@@ -354,7 +380,7 @@
             gap: 4px;
             font-size: 13px;
             color: #999;
-            padding: 8px 14px;
+            padding: 6px 12px;
             border-radius: 20px;
             transition: all 0.3s;
         }
@@ -370,26 +396,19 @@
         .resonance-btn.active {
             background: linear-gradient(135deg, #FF6B9D 0%, #FF8E53 100%);
             color: white;
-            box-shadow: 0 4px 12px rgba(255, 107, 157, 0.4);
+            box-shadow: 0 4px 12px rgba(255, 107, 157, 0.3);
         }
 
-        /* 优化2 & 3：空状态 */
+        /* 优化2：空状态 */
         .empty-state {
             text-align: center;
             padding: 80px 20px;
-            animation: fadeIn 0.5s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
         }
 
         .empty-icon {
             font-size: 100px;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
             animation: float 3s ease-in-out infinite;
-            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.1));
         }
 
         @keyframes float {
@@ -399,29 +418,44 @@
 
         .empty-text {
             font-size: 16px;
-            color: #999;
+            color: #666;
             margin-bottom: 24px;
-            line-height: 1.8;
+            line-height: 1.6;
         }
 
         .empty-btn {
-            background: linear-gradient(135deg, #42A5F5 0%, #1E88E5 100%);
+            background: linear-gradient(135deg, #0288D1 0%, #03A9F4 100%);
             color: white;
             border: none;
-            padding: 14px 32px;
+            padding: 14px 28px;
             border-radius: 25px;
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            box-shadow: 0 6px 20px rgba(66, 165, 245, 0.4);
+            box-shadow: 0 4px 15px rgba(2, 136, 209, 0.3);
             transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
         }
 
         .empty-btn:active {
             transform: scale(0.95);
+        }
+
+        /* 优化3：已举报空状态 - 不引导用户写 */
+        .empty-reported {
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .empty-reported-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            opacity: 0.6;
+        }
+
+        .empty-reported-text {
+            font-size: 15px;
+            color: #999;
+            line-height: 1.6;
         }
 
         /* 抽屉 */
@@ -436,7 +470,6 @@
             pointer-events: none;
             transition: opacity 0.3s;
             z-index: 200;
-            backdrop-filter: blur(5px);
         }
 
         .drawer-overlay.active {
@@ -458,7 +491,6 @@
             z-index: 201;
             max-height: 80vh;
             overflow-y: auto;
-            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
         }
 
         .drawer.active {
@@ -513,19 +545,18 @@
             width: 100%;
             min-height: 120px;
             border: 2px solid #E0E0E0;
-            border-radius: 16px;
-            padding: 14px;
+            border-radius: 12px;
+            padding: 12px;
             font-size: 15px;
             line-height: 1.6;
             resize: none;
             outline: none;
             font-family: inherit;
-            transition: all 0.3s;
+            transition: border-color 0.3s;
         }
 
         .form-textarea:focus {
-            border-color: #42A5F5;
-            box-shadow: 0 0 0 3px rgba(66, 165, 245, 0.1);
+            border-color: #0288D1;
         }
 
         .category-select {
@@ -535,9 +566,9 @@
         }
 
         .category-option {
-            padding: 14px 10px;
+            padding: 12px;
             border: 2px solid #E0E0E0;
-            border-radius: 16px;
+            border-radius: 12px;
             background: white;
             cursor: pointer;
             text-align: center;
@@ -545,24 +576,22 @@
         }
 
         .category-option.selected {
-            border-color: #42A5F5;
-            background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
-            box-shadow: 0 4px 12px rgba(66, 165, 245, 0.2);
+            border-color: #0288D1;
+            background: #E3F2FD;
         }
 
         .category-option .icon {
-            font-size: 28px;
-            margin-bottom: 6px;
+            font-size: 24px;
+            margin-bottom: 4px;
         }
 
         .category-option .label {
             font-size: 12px;
             color: #666;
-            font-weight: 500;
         }
 
         .category-option.selected .label {
-            color: #1E88E5;
+            color: #0288D1;
             font-weight: 600;
         }
 
@@ -570,7 +599,7 @@
             width: 100%;
             padding: 16px;
             border: none;
-            border-radius: 16px;
+            border-radius: 12px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
@@ -579,9 +608,9 @@
         }
 
         .submit-btn.active {
-            background: linear-gradient(135deg, #42A5F5 0%, #1E88E5 100%);
+            background: linear-gradient(135deg, #0288D1 0%, #03A9F4 100%);
             color: white;
-            box-shadow: 0 6px 20px rgba(66, 165, 245, 0.4);
+            box-shadow: 0 4px 15px rgba(2, 136, 209, 0.3);
         }
 
         .submit-btn:not(.active) {
@@ -596,10 +625,10 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0, 0, 0, 0.8);
             color: white;
-            padding: 16px 28px;
-            border-radius: 16px;
+            padding: 16px 24px;
+            border-radius: 12px;
             font-size: 15px;
             opacity: 0;
             pointer-events: none;
@@ -607,7 +636,6 @@
             z-index: 300;
             max-width: 80%;
             text-align: center;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
         }
 
         .toast.show {
@@ -627,7 +655,6 @@
             justify-content: center;
             z-index: 250;
             padding: 20px;
-            backdrop-filter: blur(5px);
         }
 
         .modal-overlay.active {
@@ -636,12 +663,11 @@
 
         .modal {
             background: white;
-            border-radius: 24px;
-            padding: 28px;
+            border-radius: 20px;
+            padding: 24px;
             max-width: 320px;
             width: 100%;
             animation: modalIn 0.3s ease;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
         }
 
         @keyframes modalIn {
@@ -680,7 +706,7 @@
             flex: 1;
             padding: 14px;
             border: none;
-            border-radius: 14px;
+            border-radius: 12px;
             font-size: 15px;
             font-weight: 600;
             cursor: pointer;
@@ -693,9 +719,8 @@
         }
 
         .modal-btn.confirm {
-            background: linear-gradient(135deg, #F44336 0%, #E53935 100%);
+            background: #F44336;
             color: white;
-            box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
         }
 
         /* 加载状态 */
@@ -707,10 +732,10 @@
 
         .loading-spinner {
             display: inline-block;
-            width: 24px;
-            height: 24px;
+            width: 30px;
+            height: 30px;
             border: 3px solid #E0E0E0;
-            border-top-color: #42A5F5;
+            border-top-color: #0288D1;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
             margin-bottom: 12px;
@@ -720,23 +745,18 @@
             to { transform: rotate(360deg); }
         }
 
-        /* 隐藏旧的写心情按钮 */
-        .write-btn {
-            display: none;
-        }
-
         @media (max-width: 375px) {
             .header-title {
-                font-size: 22px;
+                font-size: 20px;
             }
 
             .stat-value {
                 font-size: 18px;
             }
 
-            .new-mood-btn {
-                padding: 8px 16px;
-                font-size: 13px;
+            .write-mood-btn {
+                padding: 8px 14px;
+                font-size: 14px;
             }
 
             .category-select {
@@ -744,17 +764,17 @@
             }
 
             .category-option {
-                padding: 12px 8px;
+                padding: 10px 8px;
             }
 
             .category-option .icon {
-                font-size: 24px;
+                font-size: 20px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- 顶部统计区 - 大海背景 -->
+    <!-- 顶部统计区 -->
     <div class="header">
         <div class="header-content">
             <div class="header-top">
@@ -762,9 +782,9 @@
                     <span>🌊</span>
                     <span>心情漂流瓶</span>
                 </div>
-                <button class="new-mood-btn" onclick="openDrawer()">
+                <button class="write-mood-btn" onclick="openDrawer()">
                     <span>✏️</span>
-                    <span>新心情</span>
+                    <span>写心情</span>
                 </button>
             </div>
             <div class="header-subtitle">悄悄说出你的心事，让大海带走烦恼</div>
@@ -815,9 +835,6 @@
             <p>加载中...</p>
         </div>
     </div>
-
-    <!-- 写心情按钮（隐藏，由顶部按钮替代） -->
-    <button class="write-btn" onclick="openDrawer()">✏️</button>
 
     <!-- 抽屉 -->
     <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
@@ -890,14 +907,12 @@
             isLoading: false
         };
 
-        // 分类标签映射
-        const CATEGORY_LABELS = {
-            all: '全部',
-            happy: '开心',
-            anxious: '焦虑',
-            confused: '迷茫',
-            complain: '吐槽',
-            reported: '已举报'
+        // 分类配置
+        const CATEGORY_CONFIG = {
+            happy: { icon: '😊', label: '开心', emptyText: '暂时还没人分享开心的事，要不你写一个？' },
+            anxious: { icon: '😰', label: '焦虑', emptyText: '暂时还没人分享焦虑，要不你写一个？' },
+            confused: { icon: '😵', label: '迷茫', emptyText: '暂时还没人分享迷茫，要不你写一个？' },
+            complain: { icon: '😤', label: '吐槽', emptyText: '暂时还没人吐槽，要不你写一个？' }
         };
 
         // 生成UUID
@@ -984,39 +999,37 @@
         function renderMoodList(append = false) {
             const container = document.getElementById('moodList');
 
-            // 优化2 & 3：空状态处理
             if (state.moods.length === 0) {
-                let emptyIcon = '🌊';
-                let emptyText = '';
-                let showButton = false;
-                let buttonText = '';
-
-                if (state.currentCategory === 'reported') {
-                    // 优化3：已举报界面 - 不引导用户写
-                    emptyIcon = '🚩';
-                    emptyText = '暂时没有已举报消息';
-                    showButton = false;
-                } else if (state.currentCategory !== 'all') {
-                    // 优化2：情绪分类界面 - 引导用户写
-                    const categoryName = CATEGORY_LABELS[state.currentCategory];
-                    emptyIcon = getCategoryEmoji(state.currentCategory);
-                    emptyText = `暂时还没人发${categoryName}情绪<br>要不你写一个？`;
-                    showButton = true;
-                    buttonText = '写心情';
-                } else {
-                    // 全部分类
-                    emptyText = '暂时还没有漂流瓶<br>要不你写一个？';
-                    showButton = true;
-                    buttonText = '写心情';
+                // 优化2：情绪分类空状态 - 引导用户写
+                if (state.currentCategory !== 'all' && state.currentCategory !== 'reported') {
+                    const config = CATEGORY_CONFIG[state.currentCategory];
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">${config.icon}</div>
+                            <div class="empty-text">${config.emptyText}</div>
+                            <button class="empty-btn" onclick="openDrawer()">写心情</button>
+                        </div>
+                    `;
                 }
-
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-icon">${emptyIcon}</div>
-                        <div class="empty-text">${emptyText}</div>
-                        ${showButton ? `<button class="empty-btn" onclick="openDrawer()"><span>✏️</span><span>${buttonText}</span></button>` : ''}
-                    </div>
-                `;
+                // 优化3：已举报空状态 - 不引导用户写
+                else if (state.currentCategory === 'reported') {
+                    container.innerHTML = `
+                        <div class="empty-reported">
+                            <div class="empty-reported-icon">🚩</div>
+                            <div class="empty-reported-text">暂时没有已举报消息</div>
+                        </div>
+                    `;
+                }
+                // 全部分类的空状态
+                else {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">🌊</div>
+                            <div class="empty-text">暂时还没有漂流瓶<br>要不你写一个？</div>
+                            <button class="empty-btn" onclick="openDrawer()">写心情</button>
+                        </div>
+                    `;
+                }
                 return;
             }
 
@@ -1034,7 +1047,7 @@
                 complain: '😤'
             };
 
-            // 最新消息提示（只在第一页且不是追加时显示，且不是已举报分类）
+            // 最新消息提示（只在第一页且不是追加时显示，且不是已举报筛选）
             let newestHintHtml = '';
             if (!append && state.currentPage === 1 && state.moods.length > 0 && state.currentCategory !== 'reported') {
                 newestHintHtml = `
@@ -1096,18 +1109,6 @@
             } else {
                 container.innerHTML = newestHintHtml + moodCards;
             }
-        }
-
-        // 获取分类emoji
-        function getCategoryEmoji(category) {
-            const emojis = {
-                happy: '😊',
-                anxious: '😰',
-                confused: '😵',
-                complain: '😤',
-                all: '🌊'
-            };
-            return emojis[category] || '🌊';
         }
 
         // 设置分类切换
