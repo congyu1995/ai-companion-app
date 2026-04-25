@@ -2,218 +2,1194 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AI Companion App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>小海星·心情漂流瓶</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(180deg, #E3F2FD 0%, #FFF 100%);
             min-height: 100vh;
+            padding-bottom: env(safe-area-inset-bottom);
+            position: relative;
+        }
+
+        /* 顶部统计区 */
+        .header {
+            background: linear-gradient(135deg, #42A5F5 0%, #1E88E5 100%);
+            padding: 20px 16px 24px;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(66, 165, 245, 0.3);
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            padding: 20px;
+            gap: 8px;
         }
 
-        .container {
-            max-width: 600px;
-            width: 100%;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-            color: white;
-        }
-
-        .header h1 {
-            font-size: 42px;
-            margin-bottom: 10px;
-            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        }
-
-        .header p {
-            font-size: 16px;
+        .header-subtitle {
+            font-size: 13px;
             opacity: 0.9;
-        }
-
-        .products {
-            display: grid;
-            gap: 24px;
-        }
-
-        .product-card {
-            background: white;
-            border-radius: 24px;
-            padding: 32px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-            text-decoration: none;
-            color: inherit;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .product-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
-        }
-
-        .product-card:active {
-            transform: scale(0.98);
-        }
-
-        .product-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-        }
-
-        .product-card.ai-companion::before {
-            background: linear-gradient(90deg, #667eea, #764ba2);
-        }
-
-        .product-card.mood-bottle::before {
-            background: linear-gradient(90deg, #42A5F5, #1E88E5);
-        }
-
-        .product-icon {
-            font-size: 56px;
             margin-bottom: 16px;
         }
 
-        .product-title {
-            font-size: 24px;
+        .stats-row {
+            display: flex;
+            gap: 12px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 12px 16px;
+            border-radius: 12px;
+            flex: 1;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            opacity: 0.9;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 20px;
             font-weight: 700;
-            margin-bottom: 12px;
-            color: #333;
         }
 
-        .product-desc {
-            font-size: 15px;
-            color: #666;
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
-
-        .product-tags {
+        /* 分类筛选区 */
+        .category-bar {
+            background: white;
+            padding: 12px 16px;
             display: flex;
             gap: 8px;
-            flex-wrap: wrap;
+            overflow-x: auto;
+            position: sticky;
+            top: 116px;
+            z-index: 99;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
         }
 
-        .tag {
-            padding: 6px 12px;
-            background: #f5f7fa;
-            border-radius: 12px;
-            font-size: 13px;
+        .category-bar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .category-tab {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: none;
+            background: #F5F5F5;
             color: #666;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        .tag.primary {
-            background: linear-gradient(135deg, #667eea20, #764ba220);
-            color: #667eea;
+        .category-tab.active {
+            background: linear-gradient(135deg, #42A5F5 0%, #1E88E5 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(66, 165, 245, 0.3);
         }
 
-        .tag.secondary {
-            background: #E3F2FD;
+        /* 心情列表区 */
+        .mood-list {
+            padding: 16px;
+            padding-bottom: 100px;
+        }
+
+        .mood-card {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            position: relative;
+            transition: all 0.3s;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .mood-card.highlight {
+            animation: highlightPulse 2s ease;
+            box-shadow: 0 4px 20px rgba(66, 165, 245, 0.4);
+        }
+
+        @keyframes highlightPulse {
+            0%, 100% {
+                box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            }
+            50% {
+                box-shadow: 0 8px 30px rgba(66, 165, 245, 0.6);
+            }
+        }
+
+        .mood-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .mood-nickname {
+            font-size: 15px;
+            font-weight: 600;
             color: #1E88E5;
         }
 
-        .footer {
+        .mood-category {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .category-happy {
+            background: #FFF9C4;
+            color: #F57F17;
+        }
+
+        .category-anxious {
+            background: #FFE0B2;
+            color: #E65100;
+        }
+
+        .category-confused {
+            background: #E1BEE7;
+            color: #7B1FA2;
+        }
+
+        .category-complain {
+            background: #ECEFF1;
+            color: #546E7A;
+        }
+
+        .mood-content {
+            font-size: 15px;
+            line-height: 1.6;
+            color: #333;
+            margin-bottom: 12px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .mood-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 12px;
+            border-top: 1px solid #F0F0F0;
+        }
+
+        .mood-stats {
+            display: flex;
+            gap: 16px;
+        }
+
+        .mood-stat-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #999;
+        }
+
+        .mood-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 13px;
+            color: #999;
+            padding: 6px 12px;
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+
+        .action-btn:active {
+            transform: scale(0.95);
+        }
+
+        .resonance-btn {
+            background: #F5F5F5;
+        }
+
+        .resonance-btn.active {
+            background: linear-gradient(135deg, #FF6B9D 0%, #FF8E53 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(255, 107, 157, 0.3);
+        }
+
+        .reported-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: #FFEBEE;
+            color: #F44336;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            border: 1px solid #FFCDD2;
+        }
+
+        /* 空状态 */
+        .empty-state {
             text-align: center;
-            margin-top: 40px;
+            padding: 60px 20px;
+        }
+
+        .empty-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .empty-text {
+            font-size: 16px;
+            color: #999;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .empty-btn {
+            background: linear-gradient(135deg, #42A5F5 0%, #1E88E5 100%);
             color: white;
-            opacity: 0.8;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(66, 165, 245, 0.3);
+            transition: all 0.3s;
+        }
+
+        /* 写心情按钮 */
+        .write-btn {
+            position: fixed;
+            bottom: calc(80px + env(safe-area-inset-bottom));
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #42A5F5 0%, #1E88E5 100%);
+            border: none;
+            box-shadow: 0 6px 20px rgba(66, 165, 245, 0.4);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            transition: all 0.3s;
+            z-index: 90;
+        }
+
+        .write-btn:active {
+            transform: scale(0.9);
+        }
+
+        /* 抽屉 */
+        .drawer-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            z-index: 200;
+        }
+
+        .drawer-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .drawer {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: white;
+            border-radius: 24px 24px 0 0;
+            padding: 24px 16px;
+            padding-bottom: calc(24px + env(safe-area-inset-bottom));
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 201;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .drawer.active {
+            transform: translateY(0);
+        }
+
+        .drawer-handle {
+            width: 36px;
+            height: 4px;
+            background: #E0E0E0;
+            border-radius: 2px;
+            margin: 0 auto 20px;
+        }
+
+        .drawer-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
             font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .footer a {
+        .char-count {
+            font-size: 12px;
+            color: #999;
+            font-weight: 400;
+        }
+
+        .char-count.warning {
+            color: #FF9800;
+        }
+
+        .char-count.danger {
+            color: #F44336;
+        }
+
+        .form-textarea {
+            width: 100%;
+            min-height: 120px;
+            border: 2px solid #E0E0E0;
+            border-radius: 12px;
+            padding: 12px;
+            font-size: 15px;
+            line-height: 1.6;
+            resize: none;
+            outline: none;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .form-textarea:focus {
+            border-color: #42A5F5;
+        }
+
+        .category-select {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .category-option {
+            padding: 12px;
+            border: 2px solid #E0E0E0;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .category-option.selected {
+            border-color: #42A5F5;
+            background: #E3F2FD;
+        }
+
+        .category-option .icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+
+        .category-option .label {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .category-option.selected .label {
+            color: #1E88E5;
+            font-weight: 600;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 12px;
+        }
+
+        .submit-btn.active {
+            background: linear-gradient(135deg, #42A5F5 0%, #1E88E5 100%);
             color: white;
-            text-decoration: underline;
+            box-shadow: 0 4px 15px rgba(66, 165, 245, 0.3);
         }
 
-        @media (max-width: 480px) {
-            .header h1 {
-                font-size: 32px;
+        .submit-btn:not(.active) {
+            background: #E0E0E0;
+            color: #999;
+            pointer-events: none;
+        }
+
+        /* Toast提示 */
+        .toast {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-size: 15px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            z-index: 300;
+            max-width: 80%;
+            text-align: center;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        /* 确认弹窗 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 250;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            max-width: 320px;
+            width: 100%;
+            animation: modalIn 0.3s ease;
+        }
+
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .modal-content {
+            font-size: 15px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .modal-btn.cancel {
+            background: #F5F5F5;
+            color: #666;
+        }
+
+        .modal-btn.confirm {
+            background: #F44336;
+            color: white;
+        }
+
+        /* 加载状态 */
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #999;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #E0E0E0;
+            border-top-color: #42A5F5;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 375px) {
+            .header-title {
+                font-size: 20px;
             }
 
-            .product-card {
-                padding: 24px;
+            .stat-value {
+                font-size: 18px;
             }
 
-            .product-icon {
-                font-size: 48px;
+            .category-select {
+                gap: 8px;
             }
 
-            .product-title {
+            .category-option {
+                padding: 10px 8px;
+            }
+
+            .category-option .icon {
                 font-size: 20px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>✨ AI Companion App</h1>
-            <p>温暖的陪伴，从这里开始</p>
+    <!-- 顶部统计区 -->
+    <div class="header">
+        <div class="header-title">
+            <span>🌊</span>
+            <span>心情漂流瓶</span>
+        </div>
+        <div class="header-subtitle">悄悄说出你的心事，让大海带走烦恼</div>
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-label">今日新增</div>
+                <div class="stat-value" id="todayCount">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">总心情数</div>
+                <div class="stat-value" id="totalCount">0</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 分类筛选区 -->
+    <div class="category-bar">
+        <button class="category-tab active" data-category="all">
+            <span>全部</span>
+        </button>
+        <button class="category-tab" data-category="happy">
+            <span>😊</span>
+            <span>开心</span>
+        </button>
+        <button class="category-tab" data-category="anxious">
+            <span>😰</span>
+            <span>焦虑</span>
+        </button>
+        <button class="category-tab" data-category="confused">
+            <span>😵</span>
+            <span>迷茫</span>
+        </button>
+        <button class="category-tab" data-category="complain">
+            <span>😤</span>
+            <span>吐槽</span>
+        </button>
+    </div>
+
+    <!-- 心情列表区 -->
+    <div class="mood-list" id="moodList">
+        <div class="loading">
+            <div class="loading-spinner"></div>
+            <p>加载中...</p>
+        </div>
+    </div>
+
+    <!-- 写心情按钮 -->
+    <button class="write-btn" onclick="openDrawer()">✏️</button>
+
+    <!-- 抽屉 -->
+    <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+    <div class="drawer" id="drawer">
+        <div class="drawer-handle"></div>
+        <div class="drawer-title">写心情</div>
+        
+        <div class="form-group">
+            <div class="form-label">
+                <span>正文内容</span>
+                <span class="char-count"><span id="charCount">0</span>/200</span>
+            </div>
+            <textarea class="form-textarea" id="moodContent" placeholder="写下你的心情，让大海带走烦恼..." oninput="updateCharCount()"></textarea>
         </div>
 
-        <div class="products">
-            <a href="/ai-companion" class="product-card ai-companion">
-                <div class="product-icon">🤖</div>
-                <div class="product-title">AI虚拟角色陪伴</div>
-                <div class="product-desc">
-                    24小时在线的AI伙伴，随时倾听你的心声，用温暖和幽默点亮你的每一天。选择你的专属角色，建立独特的情感连接。
+        <div class="form-group">
+            <div class="form-label">心情分类</div>
+            <div class="category-select">
+                <div class="category-option" data-category="happy" onclick="selectCategory('happy')">
+                    <div class="icon">😊</div>
+                    <div class="label">开心</div>
                 </div>
-                <div class="product-tags">
-                    <span class="tag primary">情感陪伴</span>
-                    <span class="tag">多角色选择</span>
-                    <span class="tag">亲密度系统</span>
+                <div class="category-option" data-category="anxious" onclick="selectCategory('anxious')">
+                    <div class="icon">😰</div>
+                    <div class="label">焦虑</div>
                 </div>
-            </a>
-
-            <a href="/mood-bottle" class="product-card mood-bottle">
-                <div class="product-icon">🌊</div>
-                <div class="product-title">心情漂流瓶</div>
-                <div class="product-desc">
-                    匿名分享你的心情，让它随波逐流，找到共鸣的人。没有身份，没有压力，只有纯粹的情感表达。
+                <div class="category-option" data-category="confused" onclick="selectCategory('confused')">
+                    <div class="icon">😵</div>
+                    <div class="label">迷茫</div>
                 </div>
-                <div class="product-tags">
-                    <span class="tag secondary">匿名分享</span>
-                    <span class="tag">情感共鸣</span>
-                    <span class="tag">心情分类</span>
+                <div class="category-option" data-category="complain" onclick="selectCategory('complain')">
+                    <div class="icon">😤</div>
+                    <div class="label">吐槽</div>
                 </div>
-            </a>
+            </div>
         </div>
 
-        <div class="footer">
-            <p>Made with ❤️ by <a href="https://github.com/congyu1995" target="_blank">congyu1995</a></p>
-            <p style="margin-top: 8px; opacity: 0.7;">© 2026 AI Companion App. All rights reserved.</p>
+        <button class="submit-btn" id="submitBtn" onclick="submitMood()">投入大海</button>
+    </div>
+
+    <!-- Toast提示 -->
+    <div class="toast" id="toast"></div>
+
+    <!-- 确认弹窗 -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-title">举报确认</div>
+            <div class="modal-content">确定举报这条心情吗？</div>
+            <div class="modal-actions">
+                <button class="modal-btn cancel" onclick="closeModal()">取消</button>
+                <button class="modal-btn confirm" onclick="confirmReport()">确认举报</button>
+            </div>
         </div>
     </div>
 
     <script>
-        // 添加卡片点击动画效果
-        document.querySelectorAll('.product-card').forEach(card => {
-            card.addEventListener('mouseenter', () => {
-                card.style.transform = 'translateY(-8px)';
+        // API基础路径
+        const API_BASE = '/api/mood-bottle';
+
+        // 状态管理
+        let state = {
+            sessionId: localStorage.getItem('mood_bottle_session_id'),
+            moods: [],
+            currentCategory: 'all',
+            selectedCategory: null,
+            currentPage: 1,
+            pageSize: 10,
+            hasMore: true,
+            reportingMoodId: null,
+            isLoading: false
+        };
+
+        // 生成UUID
+        function generateUUID() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                const r = Math.random() * 16 | 0;
+                const v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
             });
+        }
+
+        // 初始化
+        async function init() {
+            // 获取或创建session
+            if (!state.sessionId) {
+                state.sessionId = generateUUID();
+                localStorage.setItem('mood_bottle_session_id', state.sessionId);
+            }
+
+            // 加载统计数据
+            await loadStatistics();
+
+            // 加载心情列表
+            await loadMoods();
+
+            // 设置分类切换事件
+            setupCategoryTabs();
+
+            // 设置无限滚动
+            setupInfiniteScroll();
+        }
+
+        // 加载统计数据
+        async function loadStatistics() {
+            try {
+                const response = await fetch(`${API_BASE}/statistics`);
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('todayCount').textContent = data.data.todayMoods;
+                    document.getElementById('totalCount').textContent = data.data.totalMoods;
+                }
+            } catch (error) {
+                console.error('加载统计数据失败:', error);
+            }
+        }
+
+        // 加载心情列表
+        async function loadMoods(append = false) {
+            if (state.isLoading || (!append && !state.hasMore && state.currentPage > 1)) return;
+
+            state.isLoading = true;
+
+            try {
+                const params = new URLSearchParams({
+                    category: state.currentCategory,
+                    page: state.currentPage,
+                    limit: state.pageSize,
+                    sessionId: state.sessionId
+                });
+
+                const response = await fetch(`${API_BASE}/moods?${params}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    if (append) {
+                        state.moods = [...state.moods, ...data.data.list];
+                    } else {
+                        state.moods = data.data.list;
+                    }
+
+                    state.hasMore = data.data.pagination.page < data.data.pagination.totalPages;
+                    renderMoodList(append);
+                }
+            } catch (error) {
+                console.error('加载心情列表失败:', error);
+                showToast('加载失败，请重试');
+            } finally {
+                state.isLoading = false;
+            }
+        }
+
+        // 渲染心情列表
+        function renderMoodList(append = false) {
+            const container = document.getElementById('moodList');
+
+            if (state.moods.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">🌊</div>
+                        <div class="empty-text">暂时还没有漂流瓶<br>要不你写一个？</div>
+                        <button class="empty-btn" onclick="openDrawer()">写心情</button>
+                    </div>
+                `;
+                return;
+            }
+
+            const categoryClasses = {
+                happy: 'category-happy',
+                anxious: 'category-anxious',
+                confused: 'category-confused',
+                complain: 'category-complain'
+            };
+
+            const categoryIcons = {
+                happy: '😊',
+                anxious: '😰',
+                confused: '😵',
+                complain: '😤'
+            };
+
+            const moodCards = state.moods.map(mood => {
+                const isResonated = mood.userInteraction.resonance || false;
+                const isOwner = mood.userInteraction.owner || false;
+
+                return `
+                    <div class="mood-card" data-id="${mood.id}">
+                        ${mood.userInteraction.report ? '<div class="reported-badge">已举报</div>' : ''}
+                        <div class="mood-header">
+                            <div class="mood-nickname">${mood.nickname}</div>
+                            <div class="mood-category ${categoryClasses[mood.category]}">
+                                ${categoryIcons[mood.category]} ${mood.categoryLabel}
+                            </div>
+                        </div>
+                        <div class="mood-content">${mood.content}</div>
+                        <div class="mood-footer">
+                            <div class="mood-stats">
+                                <div class="mood-stat-item">
+                                    <span>👁</span>
+                                    <span>${mood.viewCount}</span>
+                                </div>
+                            </div>
+                            <div class="mood-actions">
+                                <button class="action-btn resonance-btn ${isResonated ? 'active' : ''}" 
+                                        onclick="toggleResonance('${mood.id}')"
+                                        ${isOwner ? 'disabled style="opacity: 0.5; pointer-events: none;"' : ''}>
+                                    <span>💖</span>
+                                    <span>${mood.resonanceCount}</span>
+                                </button>
+                                <button class="action-btn" 
+                                        onclick="showReportModal('${mood.id}')"
+                                        ${isOwner || mood.userInteraction.report ? 'disabled style="opacity: 0.5; pointer-events: none;"' : ''}>
+                                    <span>🚩</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            if (append) {
+                container.innerHTML += moodCards;
+            } else {
+                container.innerHTML = moodCards;
+            }
+        }
+
+        // 设置分类切换
+        function setupCategoryTabs() {
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.addEventListener('click', async () => {
+                    // 更新样式
+                    document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+
+                    // 更新状态
+                    state.currentCategory = tab.dataset.category;
+                    state.currentPage = 1;
+                    state.hasMore = true;
+
+                    // 重新加载
+                    await loadMoods();
+
+                    // 滚动到顶部
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            });
+        }
+
+        // 设置无限滚动
+        function setupInfiniteScroll() {
+            window.addEventListener('scroll', () => {
+                if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100) {
+                    if (state.hasMore && !state.isLoading) {
+                        state.currentPage++;
+                        loadMoods(true);
+                    }
+                }
+            });
+        }
+
+        // 共鸣
+        async function toggleResonance(moodId) {
+            try {
+                const response = await fetch(`${API_BASE}/resonance`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        moodId: moodId,
+                        sessionId: state.sessionId
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // 更新本地状态
+                    const mood = state.moods.find(m => m.id === moodId);
+                    if (mood) {
+                        mood.resonanceCount = data.data.resonanceCount;
+                        mood.userInteraction.resonance = data.data.isResonated;
+                        renderMoodList();
+                    }
+                } else {
+                    showToast(data.error || '操作失败');
+                }
+            } catch (error) {
+                console.error('共鸣操作失败:', error);
+                showToast('操作失败，请重试');
+            }
+        }
+
+        // 显示举报弹窗
+        function showReportModal(moodId) {
+            const mood = state.moods.find(m => m.id === moodId);
             
-            card.addEventListener('mouseleave', () => {
-                card.style.transform = 'translateY(0)';
+            if (mood.userInteraction.owner) {
+                showToast('不能举报自己的心情');
+                return;
+            }
+
+            if (mood.userInteraction.report) {
+                showToast('你已经举报过该内容');
+                return;
+            }
+
+            state.reportingMoodId = moodId;
+            document.getElementById('modalOverlay').classList.add('active');
+        }
+
+        // 关闭弹窗
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('active');
+            state.reportingMoodId = null;
+        }
+
+        // 确认举报
+        async function confirmReport() {
+            if (!state.reportingMoodId) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/report`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        moodId: state.reportingMoodId,
+                        sessionId: state.sessionId
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // 更新本地状态
+                    const mood = state.moods.find(m => m.id === state.reportingMoodId);
+                    if (mood) {
+                        mood.userInteraction.report = true;
+                        mood.isReported = true;
+                        renderMoodList();
+                    }
+
+                    closeModal();
+                    showToast(data.message || '举报成功');
+                } else {
+                    showToast(data.error || '举报失败');
+                }
+            } catch (error) {
+                console.error('举报失败:', error);
+                showToast('操作失败，请重试');
+            }
+        }
+
+        // 打开抽屉
+        function openDrawer() {
+            document.getElementById('drawerOverlay').classList.add('active');
+            document.getElementById('drawer').classList.add('active');
+            document.getElementById('moodContent').focus();
+        }
+
+        // 关闭抽屉
+        function closeDrawer() {
+            document.getElementById('drawerOverlay').classList.remove('active');
+            document.getElementById('drawer').classList.remove('active');
+            resetForm();
+        }
+
+        // 更新字数统计
+        function updateCharCount() {
+            const content = document.getElementById('moodContent').value;
+            const count = content.length;
+            const countEl = document.getElementById('charCount');
+
+            countEl.textContent = count;
+
+            const countParent = countEl.parentElement;
+            countParent.classList.remove('warning', 'danger');
+
+            if (count > 180) {
+                countParent.classList.add('danger');
+            } else if (count > 150) {
+                countParent.classList.add('warning');
+            }
+
+            updateSubmitButton();
+        }
+
+        // 选择分类
+        function selectCategory(category) {
+            state.selectedCategory = category;
+
+            document.querySelectorAll('.category-option').forEach(opt => {
+                opt.classList.remove('selected');
             });
-        });
+            document.querySelector(`.category-option[data-category="${category}"]`).classList.add('selected');
+
+            updateSubmitButton();
+        }
+
+        // 更新提交按钮
+        function updateSubmitButton() {
+            const content = document.getElementById('moodContent').value.trim();
+            const btn = document.getElementById('submitBtn');
+
+            if (content.length > 0 && state.selectedCategory) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        }
+
+        // 提交心情
+        async function submitMood() {
+            const content = document.getElementById('moodContent').value.trim();
+
+            // 验证
+            if (!content) {
+                showToast('请输入心情内容');
+                return;
+            }
+
+            if (!state.selectedCategory) {
+                showToast('请选择心情分类');
+                return;
+            }
+
+            if (content.length > 200) {
+                showToast('内容不能超过200字');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/moods`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        content: content,
+                        category: state.selectedCategory,
+                        sessionId: state.sessionId
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // 关闭抽屉
+                    closeDrawer();
+
+                    // 显示提示
+                    showToast(data.message || '已投递，悄悄被放入大海');
+
+                    // 更新统计
+                    await loadStatistics();
+
+                    // 重新加载列表
+                    state.currentPage = 1;
+                    state.hasMore = true;
+                    await loadMoods();
+
+                    // 滚动到顶部并高亮
+                    setTimeout(() => {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                        setTimeout(() => {
+                            const newCard = document.querySelector(`[data-id="${data.data.id}"]`);
+                            if (newCard) {
+                                newCard.classList.add('highlight');
+                                setTimeout(() => newCard.classList.remove('highlight'), 2000);
+                            }
+                        }, 300);
+                    }, 100);
+                } else {
+                    showToast(data.error || '发布失败');
+                }
+            } catch (error) {
+                console.error('发布心情失败:', error);
+                showToast('发布失败，请重试');
+            }
+        }
+
+        // 重置表单
+        function resetForm() {
+            document.getElementById('moodContent').value = '';
+            state.selectedCategory = null;
+            document.querySelectorAll('.category-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            updateCharCount();
+        }
+
+        // Toast提示
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>

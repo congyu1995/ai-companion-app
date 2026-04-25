@@ -1,6 +1,6 @@
 /**
  * 数据库初始化脚本
- * 创建所有必要的数据表
+ * 心情漂流瓶 - 数据表创建
  */
 
 const Database = require('better-sqlite3');
@@ -24,53 +24,9 @@ db.pragma('foreign_keys = ON');
 
 console.log('📦 开始初始化数据库...\n');
 
-// ========== AI陪伴相关表 ==========
-
-console.log('创建AI陪伴相关表...');
-
-// 用户表
-db.exec(`
-    CREATE TABLE IF NOT EXISTS users (
-        id TEXT PRIMARY KEY,
-        session_id TEXT UNIQUE NOT NULL,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        last_active_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    )
-`);
-console.log('✅ users 表创建成功');
-
-// 聊天历史表
-db.exec(`
-    CREATE TABLE IF NOT EXISTS chat_history (
-        id TEXT PRIMARY KEY,
-        user_id TEXT NOT NULL,
-        character_id TEXT NOT NULL,
-        message TEXT NOT NULL,
-        is_ai BOOLEAN NOT NULL,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (user_id) REFERENCES users(id)
-    )
-`);
-console.log('✅ chat_history 表创建成功');
-
-// 亲密度表
-db.exec(`
-    CREATE TABLE IF NOT EXISTS intimacy (
-        id TEXT PRIMARY KEY,
-        user_id TEXT NOT NULL,
-        character_id TEXT NOT NULL,
-        level INTEGER DEFAULT 1,
-        experience INTEGER DEFAULT 0,
-        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (user_id) REFERENCES users(id),
-        UNIQUE(user_id, character_id)
-    )
-`);
-console.log('✅ intimacy 表创建成功');
-
 // ========== 心情漂流瓶相关表 ==========
 
-console.log('\n创建心情漂流瓶相关表...');
+console.log('创建心情漂流瓶相关表...');
 
 // 心情表
 db.exec(`
@@ -119,13 +75,6 @@ console.log('✅ statistics 表创建成功');
 console.log('\n创建索引...');
 
 db.exec(`
-    CREATE INDEX IF NOT EXISTS idx_chat_history_user ON chat_history(user_id);
-    CREATE INDEX IF NOT EXISTS idx_chat_history_character ON chat_history(character_id);
-    CREATE INDEX IF NOT EXISTS idx_chat_history_created ON chat_history(created_at);
-    
-    CREATE INDEX IF NOT EXISTS idx_intimacy_user ON intimacy(user_id);
-    CREATE INDEX IF NOT EXISTS idx_intimacy_character ON intimacy(character_id);
-    
     CREATE INDEX IF NOT EXISTS idx_moods_category ON moods(category);
     CREATE INDEX IF NOT EXISTS idx_moods_created ON moods(created_at);
     CREATE INDEX IF NOT EXISTS idx_moods_reported ON moods(is_reported);

@@ -1,6 +1,6 @@
 /**
- * AI Companion App - 后端主入口
- * 集成AI虚拟角色陪伴和心情漂流瓶两个产品
+ * 小海星·心情漂流瓶 - 后端主入口
+ * 匿名心情分享平台
  */
 
 const express = require('express');
@@ -35,7 +35,7 @@ app.locals.db = db;
 
 // CORS配置
 app.use(cors({
-    origin: NODE_ENV === 'development' ? '*' : process.env.ALLOWED_ORIGINS,
+    origin: '*',
     credentials: true
 }));
 
@@ -58,29 +58,17 @@ if (NODE_ENV === 'development') {
 
 // ========== 路由配置 ==========
 
-// 引入路由
-const aiCompanionRouter = require('./routes/ai-companion');
+// 引入心情漂流瓶路由
 const moodBottleRouter = require('./routes/mood-bottle');
 
 // 挂载路由
-app.use('/api/ai-companion', aiCompanionRouter);
 app.use('/api/mood-bottle', moodBottleRouter);
 
 // ========== 页面路由 ==========
 
-// 首页
+// 首页 - 直接显示心情漂流瓶
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-// AI陪伴页面
-app.get('/ai-companion', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'ai-companion', 'index.html'));
-});
-
-// 心情漂流瓶页面
-app.get('/mood-bottle', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'mood-bottle', 'index.html'));
 });
 
 // ========== API健康检查 ==========
@@ -90,7 +78,8 @@ app.get('/api/health', (req, res) => {
         status: 'ok',
         timestamp: new Date().toISOString(),
         uptime: process.uptime(),
-        environment: NODE_ENV
+        environment: NODE_ENV,
+        product: '小海星·心情漂流瓶'
     });
 });
 
@@ -120,16 +109,11 @@ app.use((err, req, res, next) => {
 
 const server = app.listen(PORT, () => {
     console.log('\n========================================');
-    console.log('🚀 AI Companion App 服务已启动');
+    console.log('🌊 小海星·心情漂流瓶 服务已启动');
     console.log('========================================');
     console.log(`📍 本地访问: http://localhost:${PORT}`);
     console.log(`🌍 环境: ${NODE_ENV}`);
     console.log(`📊 进程ID: ${process.pid}`);
-    console.log('========================================\n');
-    console.log('📱 访问地址:');
-    console.log(`   首页:         http://localhost:${PORT}/`);
-    console.log(`   AI陪伴:       http://localhost:${PORT}/ai-companion`);
-    console.log(`   心情漂流瓶:   http://localhost:${PORT}/mood-bottle`);
     console.log('========================================\n');
 });
 
