@@ -93,7 +93,7 @@
             text-shadow: 0 2px 8px rgba(0,0,0,0.2);
         }
 
-        /* 优化1：写心情按钮 - 更明显 */
+        /* 写心情按钮 */
         .write-mood-btn {
             background: linear-gradient(135deg, #FF6B9D 0%, #FF8E53 100%);
             color: white;
@@ -201,6 +201,26 @@
             box-shadow: 0 4px 12px rgba(2, 136, 209, 0.3);
         }
 
+        /* 优化3：已举报Tab样式 - 更低调 */
+        .category-tab.reported-tab {
+            padding: 7px 12px;
+            font-size: 13px;
+            opacity: 0.7;
+            background: transparent;
+            border: 1px solid #E0E0E0;
+        }
+
+        .category-tab.reported-tab:hover {
+            opacity: 1;
+        }
+
+        .category-tab.reported-tab.active {
+            background: #F5F5F5;
+            color: #666;
+            box-shadow: none;
+            opacity: 1;
+        }
+
         /* 心情列表区 */
         .mood-list {
             padding: 16px;
@@ -275,6 +295,22 @@
             }
             50% {
                 box-shadow: 0 8px 30px rgba(2, 136, 209, 0.6);
+            }
+        }
+
+        /* 优化2：新卡片出现动画 - 更丝滑 */
+        .mood-card.new-mood {
+            animation: newMoodSlideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes newMoodSlideIn {
+            0% {
+                opacity: 0;
+                transform: translateY(-30px) scale(0.95);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
             }
         }
 
@@ -399,48 +435,68 @@
             box-shadow: 0 4px 12px rgba(255, 107, 157, 0.3);
         }
 
-        /* 优化2：空状态 */
+        /* 优化1：空状态样式 - 更精美 */
         .empty-state {
             text-align: center;
-            padding: 80px 20px;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
         }
 
         .empty-icon {
-            font-size: 100px;
-            margin-bottom: 20px;
-            animation: float 3s ease-in-out infinite;
+            font-size: 120px;
+            margin-bottom: 24px;
+            animation: floatBounce 3s ease-in-out infinite;
+            display: inline-block;
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-15px); }
+        @keyframes floatBounce {
+            0%, 100% { 
+                transform: translateY(0) rotate(0deg); 
+            }
+            25% { 
+                transform: translateY(-20px) rotate(-5deg); 
+            }
+            75% { 
+                transform: translateY(-10px) rotate(5deg); 
+            }
         }
 
         .empty-text {
-            font-size: 16px;
+            font-size: 17px;
             color: #666;
-            margin-bottom: 24px;
-            line-height: 1.6;
+            margin-bottom: 28px;
+            line-height: 1.8;
+            font-weight: 500;
         }
 
         .empty-btn {
-            background: linear-gradient(135deg, #0288D1 0%, #03A9F4 100%);
+            background: linear-gradient(135deg, #FF6B9D 0%, #FF8E53 100%);
             color: white;
             border: none;
-            padding: 14px 28px;
-            border-radius: 25px;
-            font-size: 16px;
+            padding: 16px 36px;
+            border-radius: 30px;
+            font-size: 17px;
             font-weight: 600;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(2, 136, 209, 0.3);
+            box-shadow: 0 6px 20px rgba(255, 107, 157, 0.4);
             transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .empty-btn:active {
             transform: scale(0.95);
         }
 
-        /* 优化3：已举报空状态 - 不引导用户写 */
+        .empty-btn::before {
+            content: '✏️';
+        }
+
+        /* 已举报空状态 */
         .empty-reported {
             text-align: center;
             padding: 80px 20px;
@@ -770,6 +826,10 @@
             .category-option .icon {
                 font-size: 20px;
             }
+
+            .empty-icon {
+                font-size: 100px;
+            }
         }
     </style>
 </head>
@@ -822,9 +882,8 @@
             <span>😤</span>
             <span>吐槽</span>
         </button>
-        <button class="category-tab" data-category="reported">
+        <button class="category-tab reported-tab" data-category="reported">
             <span>🚩</span>
-            <span>已举报</span>
         </button>
     </div>
 
@@ -909,10 +968,26 @@
 
         // 分类配置
         const CATEGORY_CONFIG = {
-            happy: { icon: '😊', label: '开心', emptyText: '暂时还没人分享开心的事，要不你写一个？' },
-            anxious: { icon: '😰', label: '焦虑', emptyText: '暂时还没人分享焦虑，要不你写一个？' },
-            confused: { icon: '😵', label: '迷茫', emptyText: '暂时还没人分享迷茫，要不你写一个？' },
-            complain: { icon: '😤', label: '吐槽', emptyText: '暂时还没人吐槽，要不你写一个？' }
+            happy: { 
+                icon: '😊', 
+                label: '开心', 
+                emptyText: '暂时还没人分享开心的事\n要不你写一个？' 
+            },
+            anxious: { 
+                icon: '😰', 
+                label: '焦虑', 
+                emptyText: '暂时还没人分享焦虑\n要不你写一个？' 
+            },
+            confused: { 
+                icon: '😵', 
+                label: '迷茫', 
+                emptyText: '暂时还没人分享迷茫\n要不你写一个？' 
+            },
+            complain: { 
+                icon: '😤', 
+                label: '吐槽', 
+                emptyText: '暂时还没人吐槽\n要不你写一个？' 
+            }
         };
 
         // 生成UUID
@@ -996,22 +1071,23 @@
         }
 
         // 渲染心情列表
-        function renderMoodList(append = false) {
+        function renderMoodList(append = false, newMoodId = null) {
             const container = document.getElementById('moodList');
 
             if (state.moods.length === 0) {
-                // 优化2：情绪分类空状态 - 引导用户写
+                // 优化1：情绪分类空状态 - 更精美的展示
                 if (state.currentCategory !== 'all' && state.currentCategory !== 'reported') {
                     const config = CATEGORY_CONFIG[state.currentCategory];
                     container.innerHTML = `
                         <div class="empty-state">
                             <div class="empty-icon">${config.icon}</div>
-                            <div class="empty-text">${config.emptyText}</div>
+                            <div class="empty-text">${config.emptyText.replace(/\n/g, '<br>')}</div>
                             <button class="empty-btn" onclick="openDrawer()">写心情</button>
                         </div>
                     `;
+                    return;
                 }
-                // 优化3：已举报空状态 - 不引导用户写
+                // 已举报空状态 - 不引导用户写
                 else if (state.currentCategory === 'reported') {
                     container.innerHTML = `
                         <div class="empty-reported">
@@ -1019,6 +1095,7 @@
                             <div class="empty-reported-text">暂时没有已举报消息</div>
                         </div>
                     `;
+                    return;
                 }
                 // 全部分类的空状态
                 else {
@@ -1029,8 +1106,8 @@
                             <button class="empty-btn" onclick="openDrawer()">写心情</button>
                         </div>
                     `;
+                    return;
                 }
-                return;
             }
 
             const categoryClasses = {
@@ -1047,7 +1124,7 @@
                 complain: '😤'
             };
 
-            // 最新消息提示（只在第一页且不是追加时显示，且不是已举报筛选）
+            // 最新消息提示
             let newestHintHtml = '';
             if (!append && state.currentPage === 1 && state.moods.length > 0 && state.currentCategory !== 'reported') {
                 newestHintHtml = `
@@ -1062,6 +1139,7 @@
                 const isResonated = mood.userInteraction.resonance || false;
                 const isOwner = mood.userInteraction.owner || false;
                 const isReported = mood.userInteraction.report || mood.isReported || false;
+                const isNewMood = newMoodId && mood.id === newMoodId;
 
                 const tagsHtml = `
                     <div class="mood-tags">
@@ -1073,7 +1151,7 @@
                 `;
 
                 return `
-                    <div class="mood-card" data-id="${mood.id}">
+                    <div class="mood-card ${isNewMood ? 'new-mood' : ''}" data-id="${mood.id}">
                         <div class="mood-header">
                             <div class="mood-nickname">${mood.nickname}</div>
                             ${tagsHtml}
@@ -1294,7 +1372,7 @@
             }
         }
 
-        // 提交心情
+        // 优化2：提交心情 - 更丝滑的展示
         async function submitMood() {
             const content = document.getElementById('moodContent').value.trim();
 
@@ -1334,26 +1412,35 @@
                     // 显示提示
                     showToast(data.message || '已投递，悄悄被放入大海');
 
-                    // 更新统计
-                    await loadStatistics();
+                    // 立即更新统计数据（乐观更新）
+                    const todayCountEl = document.getElementById('todayCount');
+                    const totalCountEl = document.getElementById('totalCount');
+                    todayCountEl.textContent = parseInt(todayCountEl.textContent) + 1;
+                    totalCountEl.textContent = parseInt(totalCountEl.textContent) + 1;
 
-                    // 重新加载列表
-                    state.currentPage = 1;
-                    state.hasMore = true;
-                    await loadMoods();
-
-                    // 滚动到顶部并高亮
-                    setTimeout(() => {
+                    // 优化2：立即在本地添加新心情，无需等待API
+                    const newMood = data.data;
+                    
+                    // 如果当前在"全部"或对应分类，立即添加到列表顶部
+                    if (state.currentCategory === 'all' || state.currentCategory === newMood.category) {
+                        // 添加到列表顶部
+                        state.moods.unshift(newMood);
+                        
+                        // 滚动到顶部
                         window.scrollTo({ top: 0, behavior: 'smooth' });
-
+                        
+                        // 延迟一点渲染，让滚动完成
                         setTimeout(() => {
-                            const newCard = document.querySelector(`[data-id="${data.data.id}"]`);
-                            if (newCard) {
-                                newCard.classList.add('highlight');
-                                setTimeout(() => newCard.classList.remove('highlight'), 2000);
-                            }
-                        }, 300);
-                    }, 100);
+                            renderMoodList(false, newMood.id);
+                        }, 100);
+                    } else {
+                        // 如果在其他分类，切换到对应分类或全部
+                        // 这里可以选择切换到"全部"显示新心情
+                        document.querySelector('[data-category="all"]').click();
+                    }
+
+                    // 后台更新统计（确保数据准确）
+                    loadStatistics();
                 } else {
                     showToast(data.error || '发布失败');
                 }
