@@ -14,7 +14,7 @@ COPY backend/railway-simple.js ./
 
 # 创建public目录并复制完整前端界面
 RUN mkdir -p public
-COPY frontend/public/index.html ./public/index.html
+COPY frontend/index.html ./public/index.html
 
 EXPOSE 3000
 

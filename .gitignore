@@ -1,20 +1,13 @@
 # Dependencies
 node_modules/
-*/node_modules/
-.pnp
-.pnp.js
+package-lock.json
+yarn.lock
 
-# Built files
-dist/
-build/
-.vite/
-
-# Environment variables
-.env
-.env.local
-.env.*.local
-!.env.example
-!.env.production
+# Database
+database/*.db
+database/*.sqlite
+*.db
+*.sqlite
 
 # Logs
 logs/
@@ -22,7 +15,13 @@ logs/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
 # IDE
 .vscode/
@@ -33,28 +32,24 @@ pnpm-debug.log*
 
 # OS
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
-Desktop.ini
 
-# Uploads and temporary files
-uploads/
-tmp/
-*.tmp
-*.temp
+# Build
+dist/
+build/
+.cache/
 
-# Database files
-*.db
-*.sqlite
-*.sqlite3
-
-# Redis dump
-dump.rdb
-
-# Coverage
+# Testing
 coverage/
 .nyc_output/
 
-# Misc
-*.bak
-*.backup
-.cache/
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI Companion App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 42px;
+            margin-bottom: 10px;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .products {
+            display: grid;
+            gap: 24px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+        }
+
+        .product-card:active {
+            transform: scale(0.98);
+        }
+
+        .product-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .product-card.ai-companion::before {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .product-card.mood-bottle::before {
+            background: linear-gradient(90deg, #42A5F5, #1E88E5);
+        }
+
+        .product-icon {
+            font-size: 56px;
+            margin-bottom: 16px;
+        }
+
+        .product-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #333;
+        }
+
+        .product-desc {
+            font-size: 15px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .product-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            padding: 6px 12px;
+            background: #f5f7fa;
+            border-radius: 12px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .tag.primary {
+            background: linear-gradient(135deg, #667eea20, #764ba220);
+            color: #667eea;
+        }
+
+        .tag.secondary {
+            background: #E3F2FD;
+            color: #1E88E5;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: white;
+            opacity: 0.8;
+            font-size: 14px;
+        }
+
+        .footer a {
+            color: white;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 32px;
+            }
+
+            .product-card {
+                padding: 24px;
+            }
+
+            .product-icon {
+                font-size: 48px;
+            }
+
+            .product-title {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✨ AI Companion App</h1>
+            <p>温暖的陪伴，从这里开始</p>
+        </div>
+
+        <div class="products">
+            <a href="/ai-companion" class="product-card ai-companion">
+                <div class="product-icon">🤖</div>
+                <div class="product-title">AI虚拟角色陪伴</div>
+                <div class="product-desc">
+                    24小时在线的AI伙伴，随时倾听你的心声，用温暖和幽默点亮你的每一天。选择你的专属角色，建立独特的情感连接。
+                </div>
+                <div class="product-tags">
+                    <span class="tag primary">情感陪伴</span>
+                    <span class="tag">多角色选择</span>
+                    <span class="tag">亲密度系统</span>
+                </div>
+            </a>
+
+            <a href="/mood-bottle" class="product-card mood-bottle">
+                <div class="product-icon">🌊</div>
+                <div class="product-title">心情漂流瓶</div>
+                <div class="product-desc">
+                    匿名分享你的心情，让它随波逐流，找到共鸣的人。没有身份，没有压力，只有纯粹的情感表达。
+                </div>
+                <div class="product-tags">
+                    <span class="tag secondary">匿名分享</span>
+                    <span class="tag">情感共鸣</span>
+                    <span class="tag">心情分类</span>
+                </div>
+            </a>
+        </div>
+
+        <div class="footer">
+            <p>Made with ❤️ by <a href="https://github.com/congyu1995" target="_blank">congyu1995</a></p>
+            <p style="margin-top: 8px; opacity: 0.7;">© 2026 AI Companion App. All rights reserved.</p>
+        </div>
+    </div>
+
+    <script>
+        // 添加卡片点击动画效果
+        document.querySelectorAll('.product-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-8px)';
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+</body>
+</html>
