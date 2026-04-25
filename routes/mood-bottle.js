@@ -13,7 +13,8 @@ const CATEGORIES = {
     happy: { label: '开心', value: 'happy', icon: '😊' },
     anxious: { label: '焦虑', value: 'anxious', icon: '😰' },
     confused: { label: '迷茫', value: 'confused', icon: '😵' },
-    complain: { label: '吐槽', value: 'complain', icon: '😤' }
+    complain: { label: '吐槽', value: 'complain', icon: '😤' },
+    reported: { label: '已举报', value: 'reported', icon: '🚩' }
 };
 
 // 交互类型
@@ -40,7 +41,7 @@ function generateNickname() {
  */
 router.get('/moods', (req, res) => {
     const db = req.app.locals.db;
-    const { category = 'all', page = 1, limit = 10, sessionId, reportedOnly = false } = req.query;
+    const { category = 'all', page = 1, limit = 10, sessionId } = req.query;
 
     try {
         const offset = (parseInt(page) - 1) * parseInt(limit);
@@ -49,13 +50,12 @@ router.get('/moods', (req, res) => {
         let whereClause = 'WHERE 1=1';
         const params = [];
 
-        if (category !== 'all') {
+        // 优化4：支持"只看已举报"筛选
+        if (category === 'reported') {
+            whereClause += ' AND is_reported = 1';
+        } else if (category !== 'all') {
             whereClause += ' AND category = ?';
             params.push(category);
-        }
-
-        if (reportedOnly === 'true') {
-            whereClause += ' AND is_reported = 1';
         }
 
         // 查询总数
@@ -150,7 +150,7 @@ router.post('/moods', (req, res) => {
             });
         }
 
-        if (!category || !CATEGORIES[category] || category === 'all') {
+        if (!category || !CATEGORIES[category] || category === 'all' || category === 'reported') {
             return res.status(400).json({
                 success: false,
                 error: '请选择有效的心情分类'

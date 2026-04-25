@@ -20,10 +20,10 @@
             position: relative;
         }
 
-        /* 顶部统计区 */
+        /* 顶部统计区 - 优化1：减小空间 */
         .header {
             background: linear-gradient(135deg, #42A5F5 0%, #1E88E5 100%);
-            padding: 20px 16px 24px;
+            padding: 12px 16px 16px;
             color: white;
             position: sticky;
             top: 0;
@@ -32,53 +32,53 @@
         }
 
         .header-title {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 700;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
         .header-subtitle {
-            font-size: 13px;
+            font-size: 12px;
             opacity: 0.9;
-            margin-bottom: 16px;
+            margin-bottom: 10px;
         }
 
         .stats-row {
             display: flex;
-            gap: 12px;
+            gap: 10px;
         }
 
         .stat-card {
             background: rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(10px);
-            padding: 12px 16px;
-            border-radius: 12px;
+            padding: 8px 12px;
+            border-radius: 10px;
             flex: 1;
         }
 
         .stat-label {
-            font-size: 11px;
+            font-size: 10px;
             opacity: 0.9;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
 
         .stat-value {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
         }
 
         /* 分类筛选区 */
         .category-bar {
             background: white;
-            padding: 12px 16px;
+            padding: 10px 16px;
             display: flex;
             gap: 8px;
             overflow-x: auto;
             position: sticky;
-            top: 116px;
+            top: 98px;
             z-index: 99;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
         }
@@ -88,19 +88,19 @@
         }
 
         .category-tab {
-            padding: 8px 16px;
+            padding: 6px 14px;
             border-radius: 20px;
             border: none;
             background: #F5F5F5;
             color: #666;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
             cursor: pointer;
             white-space: nowrap;
             transition: all 0.3s;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
         }
 
         .category-tab.active {
@@ -113,6 +113,36 @@
         .mood-list {
             padding: 16px;
             padding-bottom: 100px;
+        }
+
+        /* 优化2：最新消息提示 */
+        .newest-hint {
+            background: linear-gradient(135deg, #FFF9C4 0%, #FFE082 100%);
+            padding: 10px 16px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #F57F17;
+            animation: fadeInDown 0.5s ease;
+            box-shadow: 0 2px 8px rgba(245, 127, 23, 0.2);
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .newest-hint .icon {
+            font-size: 16px;
         }
 
         .mood-card {
@@ -156,6 +186,8 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
         .mood-nickname {
@@ -164,11 +196,28 @@
             color: #1E88E5;
         }
 
+        .mood-tags {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
         .mood-category {
             padding: 4px 10px;
             border-radius: 12px;
             font-size: 12px;
             font-weight: 500;
+        }
+
+        /* 优化3：已举报标记样式调整 */
+        .reported-badge {
+            background: #FFEBEE;
+            color: #F44336;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid #FFCDD2;
         }
 
         .category-happy {
@@ -252,19 +301,6 @@
             background: linear-gradient(135deg, #FF6B9D 0%, #FF8E53 100%);
             color: white;
             box-shadow: 0 4px 12px rgba(255, 107, 157, 0.3);
-        }
-
-        .reported-badge {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: #FFEBEE;
-            color: #F44336;
-            padding: 4px 10px;
-            border-radius: 8px;
-            font-size: 11px;
-            font-weight: 600;
-            border: 1px solid #FFCDD2;
         }
 
         /* 空状态 */
@@ -621,7 +657,7 @@
             }
 
             .stat-value {
-                font-size: 18px;
+                font-size: 16px;
             }
 
             .category-select {
@@ -678,6 +714,10 @@
         <button class="category-tab" data-category="complain">
             <span>😤</span>
             <span>吐槽</span>
+        </button>
+        <button class="category-tab" data-category="reported">
+            <span>🚩</span>
+            <span>已举报</span>
         </button>
     </div>
 
@@ -872,18 +912,37 @@
                 complain: '😤'
             };
 
-            const moodCards = state.moods.map(mood => {
+            // 优化2：添加最新消息提示（只在第一页且不是追加时显示）
+            let newestHintHtml = '';
+            if (!append && state.currentPage === 1 && state.moods.length > 0 && state.currentCategory !== 'reported') {
+                newestHintHtml = `
+                    <div class="newest-hint">
+                        <span class="icon">✨</span>
+                        <span>最新发布的消息，往下可查看更多</span>
+                    </div>
+                `;
+            }
+
+            const moodCards = state.moods.map((mood, index) => {
                 const isResonated = mood.userInteraction.resonance || false;
                 const isOwner = mood.userInteraction.owner || false;
+                const isReported = mood.userInteraction.report || mood.isReported || false;
+
+                // 优化3：并列展示分类和已举报标记
+                const tagsHtml = `
+                    <div class="mood-tags">
+                        <div class="mood-category ${categoryClasses[mood.category]}">
+                            ${categoryIcons[mood.category]} ${mood.categoryLabel}
+                        </div>
+                        ${isReported ? '<div class="reported-badge">🚩 已举报</div>' : ''}
+                    </div>
+                `;
 
                 return `
                     <div class="mood-card" data-id="${mood.id}">
-                        ${mood.userInteraction.report ? '<div class="reported-badge">已举报</div>' : ''}
                         <div class="mood-header">
                             <div class="mood-nickname">${mood.nickname}</div>
-                            <div class="mood-category ${categoryClasses[mood.category]}">
-                                ${categoryIcons[mood.category]} ${mood.categoryLabel}
-                            </div>
+                            ${tagsHtml}
                         </div>
                         <div class="mood-content">${mood.content}</div>
                         <div class="mood-footer">
@@ -902,7 +961,7 @@
                                 </button>
                                 <button class="action-btn" 
                                         onclick="showReportModal('${mood.id}')"
-                                        ${isOwner || mood.userInteraction.report ? 'disabled style="opacity: 0.5; pointer-events: none;"' : ''}>
+                                        ${isOwner || isReported ? 'disabled style="opacity: 0.5; pointer-events: none;"' : ''}>
                                     <span>🚩</span>
                                 </button>
                             </div>
@@ -914,7 +973,7 @@
             if (append) {
                 container.innerHTML += moodCards;
             } else {
-                container.innerHTML = moodCards;
+                container.innerHTML = newestHintHtml + moodCards;
             }
         }
 
@@ -992,7 +1051,7 @@
                 return;
             }
 
-            if (mood.userInteraction.report) {
+            if (mood.userInteraction.report || mood.isReported) {
                 showToast('你已经举报过该内容');
                 return;
             }
