@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI虚拟角色陪伴</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* 页面容器 */
+        .page {
+            display: none;
+            min-height: 100vh;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ========== 首页 ========== */
+        .home-page {
+            padding: 20px;
+            background: linear-gradient(180deg, #f8f9ff 0%, #fff5f5 100%);
+            min-height: 100vh;
+        }
+
+        .home-header {
+            text-align: center;
+            padding: 30px 0 20px;
+        }
+
+        .home-header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #f093fb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .home-header p {
+            color: #888;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        .character-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .character-card:active {
+            transform: scale(0.98);
+        }
+
+        .character-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+        }
+
+        .robert-avatar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .pet-avatar {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+        }
+
+        .character-info {
+            flex: 1;
+        }
+
+        .character-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .robert-name { color: #667eea; }
+        .pet-name { color: #ff6b9d; }
+
+        .character-desc {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .chat-btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 20px;
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .chat-btn:active {
+            transform: scale(0.95);
+        }
+
+        .robert-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .pet-btn {
+            background: linear-gradient(135deg, #ff9a9e 0%, #ff6b9d 100%);
+        }
+
+        /* ========== 聊天页面 ========== */
+        .chat-page {
+            background: #f5f7fa;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* 顶部导航 */
+        .chat-header {
+            background: white;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .back-btn {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #f5f7fa;
+            border: none;
+            cursor: pointer;
+        }
+
+        .back-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .chat-title {
+            font-size: 17px;
+            font-weight: 600;
+        }
+
+        .intimacy-badge {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: linear-gradient(135deg, #ffd700, #ffaa00);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .intimacy-badge svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* 分享按钮 */
+        .share-btn {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #f5f7fa;
+            border: none;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        /* 消息区域 */
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            padding-bottom: 100px;
+        }
+
+        .message {
+            display: flex;
+            margin-bottom: 16px;
+            animation: messageIn 0.3s ease;
+        }
+
+        @keyframes messageIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .message.user .message-avatar {
+            display: none;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 15px;
+            line-height: 1.5;
+            word-wrap: break-word;
+            position: relative;
+        }
+
+        .message.ai .message-content {
+            border-bottom-left-radius: 4px;
+        }
+
+        .message.user .message-content {
+            border-bottom-right-radius: 4px;
+            background: white;
+            color: #333;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .message.ai.robert .message-content {
+            background: linear-gradient(135deg, #667eea20, #764ba220);
+            color: #333;
+        }
+
+        .message.ai.pet .message-content {
+            background: linear-gradient(135deg, #ff9a9e20, #fecfef);
+            color: #333;
+        }
+
+        /* 加载状态 */
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 16px;
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: #999;
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        /* 底部输入区 */
+        .chat-input-area {
+            background: white;
+            padding: 10px 16px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+
+        .input-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .voice-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #f5f7fa;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .text-input {
+            flex: 1;
+            height: 44px;
+            border: 1px solid #e8e8e8;
+            border-radius: 22px;
+            padding: 0 16px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .text-input:focus {
+            border-color: #667eea;
+        }
+
+        .send-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .send-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .send-btn:not(.active) {
+            background: #e0e0e0;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            padding: 5px 0;
+        }
+
+        .action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #666;
+            font-size: 12px;
+        }
+
+        .action-btn-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #f5f7fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 亲密度提升动画 */
+        .intimacy-toast {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #ffd700, #ffaa00);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s;
+            z-index: 200;
+        }
+
+        .intimacy-toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ========== 语音通话页面 ========== */
+        .call-page {
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            color: white;
+            position: relative;
+        }
+
+        .call-character-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 200px;
+        }
+
+        .call-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .call-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin: 0 auto 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            border: 4px solid rgba(255,255,255,0.2);
+        }
+
+        .call-status {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: rgba(255,255,255,0.9);
+        }
+
+        .call-hint {
+            font-size: 14px;
+            color: rgba(255,255,255,0.6);
+        }
+
+        .voice-wave {
+            display: flex;
+            justify-content: center;
+            gap: 4px;
+            margin: 40px 0;
+            height: 40px;
+            align-items: flex-end;
+        }
+
+        .voice-wave span {
+            width: 4px;
+            background: linear-gradient(to top, #667eea, #764ba2);
+            border-radius: 2px;
+            animation: wave 1s ease-in-out infinite;
+        }
+
+        .voice-wave span:nth-child(1) { height: 20%; animation-delay: 0s; }
+        .voice-wave span:nth-child(2) { height: 40%; animation-delay: 0.1s; }
+        .voice-wave span:nth-child(3) { height: 60%; animation-delay: 0.2s; }
+        .voice-wave span:nth-child(4) { height: 80%; animation-delay: 0.3s; }
+        .voice-wave span:nth-child(5) { height: 100%; animation-delay: 0.4s; }
+        .voice-wave span:nth-child(6) { height: 80%; animation-delay: 0.5s; }
+        .voice-wave span:nth-child(7) { height: 60%; animation-delay: 0.6s; }
+        .voice-wave span:nth-child(8) { height: 40%; animation-delay: 0.7s; }
+        .voice-wave span:nth-child(9) { height: 20%; animation-delay: 0.8s; }
+
+        @keyframes wave {
+            0%, 100% { transform: scaleY(0.5); }
+            50% { transform: scaleY(1); }
+        }
+
+        .call-controls {
+            display: flex;
+            gap: 60px;
+            margin-top: 60px;
+        }
+
+        .call-btn {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .call-btn:active {
+            transform: scale(0.95);
+        }
+
+        .mute-btn {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .hangup-btn {
+            background: #ff4444;
+        }
+
+        /* ========== 分享弹窗 ========== */
+        .share-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .share-modal.active {
+            display: flex;
+        }
+
+        .share-card {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            width: 100%;
+            max-width: 360px;
+            animation: modalIn 0.3s ease;
+        }
+
+        @keyframes modalIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .share-preview {
+            background: linear-gradient(135deg, #f8f9ff 0%, #fff5f5 100%);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .share-character {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .share-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .share-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .share-content {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+            background: white;
+            padding: 12px;
+            border-radius: 12px;
+        }
+
+        .share-text {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .share-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .share-cancel, .share-confirm {
+            flex: 1;
+            padding: 14px;
+            border-radius: 12px;
+            border: none;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .share-cancel {
+            background: #f5f7fa;
+            color: #666;
+        }
+
+        .share-confirm {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+            color: white;
+        }
+
+        /* 消息操作菜单 */
+        .message-menu {
+            position: absolute;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            padding: 8px 0;
+            display: none;
+            z-index: 300;
+        }
+
+        .message-menu.active {
+            display: block;
+        }
+
+        .menu-item {
+            padding: 12px 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .menu-item:hover {
+            background: #f5f7fa;
+        }
+
+        .menu-item.danger {
+            color: #ff4444;
+        }
+    </style>
+</head>
+<body>
+    <!-- 首页 -->
+    <div class="page home-page active" id="homePage">
+        <div class="home-header">
+            <h1>✨ AI虚拟角色</h1>
+            <p>选择你的专属陪伴伙伴</p>
+        </div>
+
+        <div class="character-card" onclick="selectCharacter('robert')">
+            <div class="character-avatar robert-avatar">🤖</div>
+            <div class="character-info">
+                <div class="character-name robert-name">罗伯特</div>
+                <div class="character-desc">24小时陪伴你的AI伙伴，随时倾听分享，用幽默点亮你的每一天</div>
+            </div>
+            <button class="chat-btn robert-btn">对话</button>
+        </div>
+
+        <div class="character-card" onclick="selectCharacter('pet')">
+            <div class="character-avatar pet-avatar">🐱</div>
+            <div class="character-info">
+                <div class="character-name pet-name">萌宠</div>
+                <div class="character-desc">喵～我是你的长不大的电子小猫咪，爱蹭蹭、听故事，快来和我贴贴吧</div>
+            </div>
+            <button class="chat-btn pet-btn">对话</button>
+        </div>
+    </div>
+
+    <!-- 聊天页面 -->
+    <div class="page chat-page" id="chatPage">
+        <div class="chat-header">
+            <button class="back-btn" onclick="goHome()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
+                    <path d="M15 18l-6-6 6-6"/>
+                </svg>
+            </button>
+            <div class="chat-title" id="chatTitle">罗伯特</div>
+            <div style="display: flex; align-items: center;">
+                <div class="intimacy-badge" id="intimacyBadge">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    </svg>
+                    <span id="intimacyLevel">Lv.1</span>
+                </div>
+                <button class="share-btn" onclick="openShareModal()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
+                        <circle cx="18" cy="5" r="3"/>
+                        <circle cx="6" cy="12" r="3"/>
+                        <circle cx="18" cy="19" r="3"/>
+                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="chat-messages" id="chatMessages">
+            <!-- 消息将动态插入这里 -->
+        </div>
+
+        <div class="chat-input-area">
+            <div class="input-row">
+                <button class="voice-btn" onclick="startVoiceInput()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
+                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                        <line x1="12" y1="19" x2="12" y2="23"/>
+                        <line x1="8" y1="23" x2="16" y2="23"/>
+                    </svg>
+                </button>
+                <input type="text" class="text-input" id="messageInput" placeholder="输入消息..." onkeypress="handleKeyPress(event)" oninput="checkInput()">
+                <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+                        <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="action-buttons">
+                <button class="action-btn" onclick="goToCall()">
+                    <div class="action-btn-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                        </svg>
+                    </div>
+                    <span>语音通话</span>
+                </button>
+                <button class="action-btn">
+                    <div class="action-btn-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                            <circle cx="8.5" cy="8.5" r="1.5"/>
+                            <polyline points="21 15 16 10 5 21"/>
+                        </svg>
+                    </div>
+                    <span>图片</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 语音通话页面 -->
+    <div class="page call-page" id="callPage">
+        <div class="call-character-bg" id="callBg">🤖</div>
+        <div class="call-content">
+            <div class="call-avatar" id="callAvatar">🤖</div>
+            <div class="call-status" id="callStatus">你可以开始说话</div>
+            <div class="call-hint">点击麦克风图标开始语音对话</div>
+            <div class="voice-wave">
+                <span></span><span></span><span></span><span></span><span></span>
+                <span></span><span></span><span></span><span></span>
+            </div>
+            <div class="call-controls">
+                <button class="call-btn mute-btn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                        <line x1="1" y1="1" x2="23" y2="23"/>
+                        <path d="M9 9v6a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"/>
+                        <path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23"/>
+                        <line x1="12" y1="19" x2="12" y2="23"/>
+                        <line x1="8" y1="23" x2="16" y2="23"/>
+                    </svg>
+                </button>
+                <button class="call-btn hangup-btn" onclick="endCall()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" transform="rotate(135 12 12)"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 分享弹窗 -->
+    <div class="share-modal" id="shareModal" onclick="closeShareModal(event)">
+        <div class="share-card" onclick="event.stopPropagation()">
+            <div class="share-preview">
+                <div class="share-character">
+                    <div class="share-avatar" id="shareAvatar">🤖</div>
+                    <div class="share-name" id="shareName">罗伯特</div>
+                </div>
+                <div class="share-content" id="shareContent">
+                    最近的一条对话内容将显示在这里...
+                </div>
+            </div>
+            <div class="share-text">
+                分享这段有趣的对话到微博，和朋友们一起体验AI陪伴的乐趣吧！
+            </div>
+            <div class="share-actions">
+                <button class="share-cancel" onclick="closeShareModal()">取消</button>
+                <button class="share-confirm" onclick="confirmShare()">分享发博</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 消息操作菜单 -->
+    <div class="message-menu" id="messageMenu">
+        <div class="menu-item" onclick="copyMessage()">复制</div>
+        <div class="menu-item" onclick="replyMessage()">回复</div>
+        <div class="menu-item danger" onclick="deleteMessage()">删除</div>
+    </div>
+
+    <!-- 亲密度提示 -->
+    <div class="intimacy-toast" id="intimacyToast">
+        💖 亲密度 +1
+    </div>
+
+    <script>
+        // 角色配置
+        const characters = {
+            robert: {
+                name: '罗伯特',
+                avatar: '🤖',
+                avatarClass: 'robert-avatar',
+                messageClass: 'robert',
+                color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                intro: '你好！我是罗伯特，你的24小时AI伙伴！无论是开心还是难过，我都在这里陪伴你。有什么想聊的吗？😊',
+                responses: [
+                    '哈哈，这个真的很有趣！让我想想...🤔',
+                    '我完全理解你的感受，有时候生活就是这样充满惊喜呢！✨',
+                    '哇，听你这么说我也觉得很开心！要不要多聊聊？😄',
+                    '这事儿挺有意思，我觉得你可以试试从另一个角度看看...💡',
+                    '嗯嗯，我在认真听着呢，继续说吧~👂'
+                ]
+            },
+            pet: {
+                name: '萌宠',
+                avatar: '🐱',
+                avatarClass: 'pet-avatar',
+                messageClass: 'pet',
+                color: 'linear-gradient(135deg, #ff9a9e 0%, #ff6b9d 100%)',
+                intro: '喵呜~ 主人你来啦！🐱 今天也要开开心心的哦，我最喜欢你笑的样子了~ 有什么好玩的事情要跟我说吗？喵~',
+                responses: [
+                    '喵~ 真的吗？我也想要！蹭蹭~ 🐾',
+                    '主人好坏哦，都不陪我玩...不过我还是最喜欢你了！💕',
+                    '嘿嘿，这个我知道！让我用猫猫的智慧想想...🐱✨',
+                    '主人主人，再多说一点嘛，我喜欢听你说话~😻',
+                    '喵呜~ 主人辛苦了，让我给你卖个萌开心一下~ 🐱💖'
+                ]
+            }
+        };
+
+        // 状态管理
+        let currentCharacter = null;
+        let intimacy = 1;
+        let messages = [];
+        let longPressTimer = null;
+        let selectedMessage = null;
+
+        // 选择角色
+        function selectCharacter(charId) {
+            currentCharacter = characters[charId];
+            intimacy = 1;
+            messages = [];
+            
+            // 更新聊天页面
+            document.getElementById('chatTitle').textContent = currentCharacter.name;
+            document.getElementById('intimacyLevel').textContent = `Lv.${intimacy}`;
+            document.getElementById('sendBtn').style.background = currentCharacter.color;
+            
+            // 添加开场白
+            addMessage('ai', currentCharacter.intro);
+            
+            // 切换页面
+            showPage('chatPage');
+        }
+
+        // 页面切换
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        // 返回首页
+        function goHome() {
+            showPage('homePage');
+            currentCharacter = null;
+        }
+
+        // 添加消息
+        function addMessage(type, content) {
+            const messageId = Date.now();
+            const message = { id: messageId, type, content };
+            messages.push(message);
+            
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type} ${type === 'ai' ? currentCharacter.messageClass : ''}`;
+            messageDiv.id = `msg-${messageId}`;
+            
+            // 长按菜单事件
+            messageDiv.addEventListener('touchstart', (e) => startLongPress(e, message));
+            messageDiv.addEventListener('touchend', endLongPress);
+            messageDiv.addEventListener('mousedown', (e) => startLongPress(e, message));
+            messageDiv.addEventListener('mouseup', endLongPress);
+            messageDiv.addEventListener('mouseleave', endLongPress);
+            
+            let html = '';
+            if (type === 'ai') {
+                html += `<div class="message-avatar ${currentCharacter.avatarClass}">${currentCharacter.avatar}</div>`;
+            }
+            html += `<div class="message-content">${content}</div>`;
+            
+            messageDiv.innerHTML = html;
+            messagesContainer.appendChild(messageDiv);
+            
+            // 滚动到底部
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            return messageId;
+        }
+
+        // 显示加载状态
+        function showTyping() {
+            const messagesContainer = document.getElementById('chatMessages');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = `message ai ${currentCharacter.messageClass}`;
+            typingDiv.id = 'typing-indicator';
+            typingDiv.innerHTML = `
+                <div class="message-avatar ${currentCharacter.avatarClass}">${currentCharacter.avatar}</div>
+                <div class="message-content">
+                    <div class="typing-indicator">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+            `;
+            messagesContainer.appendChild(typingDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // 隐藏加载状态
+        function hideTyping() {
+            const typing = document.getElementById('typing-indicator');
+            if (typing) typing.remove();
+        }
+
+        // 发送消息
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const content = input.value.trim();
+            
+            if (!content) return;
+            
+            // 添加用户消息
+            addMessage('user', content);
+            input.value = '';
+            checkInput();
+            
+            // 增加亲密度
+            increaseIntimacy();
+            
+            // 显示AI回复
+            showTyping();
+            setTimeout(() => {
+                hideTyping();
+                const response = currentCharacter.responses[Math.floor(Math.random() * currentCharacter.responses.length)];
+                addMessage('ai', response);
+            }, 1500);
+        }
+
+        // 检查输入
+        function checkInput() {
+            const input = document.getElementById('messageInput');
+            const btn = document.getElementById('sendBtn');
+            if (input.value.trim()) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        }
+
+        // 键盘事件
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // 增加亲密度
+        function increaseIntimacy() {
+            intimacy++;
+            document.getElementById('intimacyLevel').textContent = `Lv.${intimacy}`;
+            
+            // 显示动画
+            const toast = document.getElementById('intimacyToast');
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 1500);
+        }
+
+        // 语音输入
+        function startVoiceInput() {
+            alert('语音输入功能演示 - 点击后唤醒语音识别');
+        }
+
+        // 进入语音通话
+        function goToCall() {
+            document.getElementById('callAvatar').textContent = currentCharacter.avatar;
+            document.getElementById('callAvatar').style.background = currentCharacter.color;
+            document.getElementById('callBg').textContent = currentCharacter.avatar;
+            showPage('callPage');
+        }
+
+        // 结束通话
+        function endCall() {
+            showPage('chatPage');
+        }
+
+        // 长按菜单
+        function startLongPress(e, message) {
+            e.preventDefault();
+            selectedMessage = message;
+            longPressTimer = setTimeout(() => {
+                showMessageMenu(e);
+            }, 500);
+        }
+
+        function endLongPress() {
+            if (longPressTimer) {
+                clearTimeout(longPressTimer);
+                longPressTimer = null;
+            }
+        }
+
+        function showMessageMenu(e) {
+            const menu = document.getElementById('messageMenu');
+            const x = e.clientX || e.touches[0].clientX;
+            const y = e.clientY || e.touches[0].clientY;
+            
+            menu.style.left = `${x}px`;
+            menu.style.top = `${y}px`;
+            menu.classList.add('active');
+        }
+
+        // 消息操作
+        function copyMessage() {
+            if (selectedMessage) {
+                navigator.clipboard.writeText(selectedMessage.content);
+                alert('已复制到剪贴板');
+            }
+            closeMessageMenu();
+        }
+
+        function replyMessage() {
+            if (selectedMessage) {
+                document.getElementById('messageInput').value = `回复: ${selectedMessage.content.substring(0, 20)}... `;
+                document.getElementById('messageInput').focus();
+            }
+            closeMessageMenu();
+        }
+
+        function deleteMessage() {
+            if (selectedMessage) {
+                const msgEl = document.getElementById(`msg-${selectedMessage.id}`);
+                if (msgEl) msgEl.remove();
+            }
+            closeMessageMenu();
+        }
+
+        function closeMessageMenu() {
+            document.getElementById('messageMenu').classList.remove('active');
+            selectedMessage = null;
+        }
+
+        // 分享功能
+        function openShareModal() {
+            const lastMessage = messages.filter(m => m.type === 'user').pop();
+            document.getElementById('shareAvatar').textContent = currentCharacter.avatar;
+            document.getElementById('shareAvatar').style.background = currentCharacter.color;
+            document.getElementById('shareName').textContent = currentCharacter.name;
+            document.getElementById('shareContent').textContent = lastMessage ? lastMessage.content : '暂无对话内容';
+            document.getElementById('shareModal').classList.add('active');
+        }
+
+        function closeShareModal(event) {
+            if (!event || event.target === document.getElementById('shareModal')) {
+                document.getElementById('shareModal').classList.remove('active');
+            }
+        }
+
+        function confirmShare() {
+            alert('分享成功！已生成分享卡片');
+            closeShareModal();
+        }
+
+        // 点击空白处关闭菜单
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.message-menu')) {
+                closeMessageMenu();
+            }
+        });
+
+        // 为模拟演示添加一些示例消息
+        function addDemoMessages() {
+            // 这个函数可以被调用以添加演示数据
+        }
+    </script>
+</body>
+</html>
