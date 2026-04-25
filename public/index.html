@@ -201,26 +201,6 @@
             box-shadow: 0 4px 12px rgba(2, 136, 209, 0.3);
         }
 
-        /* 优化3：已举报Tab样式 - 更低调 */
-        .category-tab.reported-tab {
-            padding: 7px 12px;
-            font-size: 13px;
-            opacity: 0.7;
-            background: transparent;
-            border: 1px solid #E0E0E0;
-        }
-
-        .category-tab.reported-tab:hover {
-            opacity: 1;
-        }
-
-        .category-tab.reported-tab.active {
-            background: #F5F5F5;
-            color: #666;
-            box-shadow: none;
-            opacity: 1;
-        }
-
         /* 心情列表区 */
         .mood-list {
             padding: 16px;
@@ -298,7 +278,7 @@
             }
         }
 
-        /* 优化2：新卡片出现动画 - 更丝滑 */
+        /* 新卡片出现动画 */
         .mood-card.new-mood {
             animation: newMoodSlideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -435,7 +415,7 @@
             box-shadow: 0 4px 12px rgba(255, 107, 157, 0.3);
         }
 
-        /* 优化1：空状态样式 - 更精美 */
+        /* 优化1：空状态样式 - 精美展示 */
         .empty-state {
             text-align: center;
             padding: 60px 20px;
@@ -882,8 +862,10 @@
             <span>😤</span>
             <span>吐槽</span>
         </button>
-        <button class="category-tab reported-tab" data-category="reported">
+        <!-- 已举报Tab - 显示文字，放在最右边 -->
+        <button class="category-tab" data-category="reported">
             <span>🚩</span>
+            <span>已举报</span>
         </button>
     </div>
 
@@ -976,7 +958,7 @@
             anxious: { 
                 icon: '😰', 
                 label: '焦虑', 
-                emptyText: '暂时还没人分享焦虑\n要不你写一个？' 
+                emptyText: '暂时还没人发该情绪\n要不你写一个？' 
             },
             confused: { 
                 icon: '😵', 
@@ -1075,7 +1057,7 @@
             const container = document.getElementById('moodList');
 
             if (state.moods.length === 0) {
-                // 优化1：情绪分类空状态 - 更精美的展示
+                // 优化1：情绪分类空状态 - 精美展示
                 if (state.currentCategory !== 'all' && state.currentCategory !== 'reported') {
                     const config = CATEGORY_CONFIG[state.currentCategory];
                     container.innerHTML = `
@@ -1372,7 +1354,7 @@
             }
         }
 
-        // 优化2：提交心情 - 更丝滑的展示
+        // 提交心情 - 更丝滑的展示
         async function submitMood() {
             const content = document.getElementById('moodContent').value.trim();
 
@@ -1418,7 +1400,7 @@
                     todayCountEl.textContent = parseInt(todayCountEl.textContent) + 1;
                     totalCountEl.textContent = parseInt(totalCountEl.textContent) + 1;
 
-                    // 优化2：立即在本地添加新心情，无需等待API
+                    // 立即在本地添加新心情，无需等待API
                     const newMood = data.data;
                     
                     // 如果当前在"全部"或对应分类，立即添加到列表顶部
@@ -1435,7 +1417,6 @@
                         }, 100);
                     } else {
                         // 如果在其他分类，切换到对应分类或全部
-                        // 这里可以选择切换到"全部"显示新心情
                         document.querySelector('[data-category="all"]').click();
                     }
 
