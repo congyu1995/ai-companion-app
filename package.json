@@ -1,7 +1,7 @@
 {
-  "name": "ai-companion-app",
+  "name": "mood-bottle",
   "version": "1.0.0",
-  "description": "AI虚拟角色陪伴 + 心情漂流瓶 - 完整的前后端应用",
+  "description": "小海星·心情漂流瓶 - 匿名心情分享平台",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -9,19 +9,17 @@
     "init-db": "node database/init.js"
   },
   "keywords": [
-    "ai-companion",
     "mood-bottle",
-    "emotional-support",
-    "anonymous-sharing"
+    "anonymous-sharing",
+    "emotional-support"
   ],
   "author": "congyu1995",
   "license": "MIT",
   "dependencies": {
     "express": "^4.18.2",
-    "sqlite3": "^5.1.6",
+    "better-sqlite3": "^9.2.2",
     "cors": "^2.8.5",
-    "uuid": "^9.0.0",
-    "better-sqlite3": "^9.2.2"
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"
